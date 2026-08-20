@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vocabulaire · Introduction au grec biblique</title>
+<meta name="description" content="Cartes de vocabulaire grec pour Introduction au grec biblique de Jacques Boulet : apprentissage par piles et révision par chapitres.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.88em' x='4' font-size='88' font-family='Georgia,serif'%3E%CE%B1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ══════════════════════════════════════════════════════ choix -->
+  <section id="setup" class="screen">
+    <header class="masthead">
+      <p class="eyebrow">Introduction au grec biblique</p>
+      <h1>Vocabulaire</h1>
+      <p class="lede">Des cartes qui fonctionnent comme celles qu’on fabrique en carton&nbsp;: on travaille par piles, et les mots manqués reviennent jusqu’à ce qu’ils tombent.</p>
+    </header>
+
+    <div class="panel">
+      <h2 class="panel-title">1. Que faire aujourd’hui&nbsp;?</h2>
+      <div class="modes" role="radiogroup" aria-label="Mode de travail">
+        <button class="mode" role="radio" data-mode="learn" aria-checked="true">
+          <span class="mode-name">Apprendre</span>
+          <span class="mode-sub">Du vocabulaire neuf</span>
+          <span class="mode-desc">Les mots sont répartis en piles. On maîtrise la première, puis la deuxième, puis on reprend les deux ensemble&nbsp;; et ainsi de suite.</span>
+        </button>
+        <button class="mode" role="radio" data-mode="review" aria-checked="false">
+          <span class="mode-name">Réviser</span>
+          <span class="mode-sub">Du vocabulaire déjà vu</span>
+          <span class="mode-desc">Les chapitres choisis sont mélangés en une seule pile. Ce qu’on rate est mis de côté, puis retravaillé jusqu’à zéro.</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">2. Quels chapitres&nbsp;?</h2>
+        <div class="panel-actions">
+          <button class="link-btn" id="sel-all">Tout</button>
+          <button class="link-btn" id="sel-none">Rien</button>
+        </div>
+      </div>
+      <p class="hint">Maj+clic pour choisir une plage de chapitres.</p>
+      <div class="chapters" id="chapters"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">3. Réglages</h2>
+      <div class="settings">
+        <div class="setting">
+          <span class="setting-label" id="lbl-dir">Sens</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-dir" id="dir">
+            <button role="radio" data-v="gr-fr" aria-checked="true">grec → français</button>
+            <button role="radio" data-v="fr-gr" aria-checked="false">français → grec</button>
+          </div>
+        </div>
+        <div class="setting">
+          <span class="setting-label" id="lbl-pile">Taille des piles</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-pile" id="pile"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="launch">
+      <p class="tally" id="tally">Aucun chapitre choisi</p>
+      <button class="primary big" id="start" disabled>Commencer</button>
+    </div>
+
+    <footer class="downloads">
+      <h2>Emporter le vocabulaire ailleurs</h2>
+      <div class="dl-row">
+        <a class="dl" href="vocabulary.apkg" download>
+          <span class="dl-name">Paquet Anki</span>
+          <span class="dl-sub">Un sous-paquet par chapitre, dans les deux sens. À réimporter&nbsp;: vos cartes sont mises à jour, pas dupliquées.</span>
+        </a>
+        <a class="dl" href="data/vocabulary.csv" download>
+          <span class="dl-name">Fichier CSV</span>
+          <span class="dl-sub">Lexème, chapitre, glose et note. De quoi fabriquer ses propres cartes ou listes.</span>
+        </a>
+      </div>
+      <p class="colophon">Tiré de <em>Introduction au grec biblique</em>, Jacques E. J. Boulet. <span id="stamp"></span></p>
+    </footer>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ travail -->
+  <section id="study" class="screen" hidden>
+    <div class="studybar">
+      <button class="icon-btn" id="quit" aria-label="Revenir au choix des chapitres">←</button>
+      <div class="stage">
+        <span class="stage-name" id="stage-name"></span>
+        <span class="stage-sub" id="stage-sub"></span>
+      </div>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+    </div>
+    <div class="bar"><i id="bar-fill"></i></div>
+
+    <div class="card" id="card" tabindex="0" role="button" aria-live="polite">
+      <div class="face" id="prompt"></div>
+      <div class="reveal" id="reveal" hidden></div>
+      <p class="flip-hint" id="flip-hint">Cliquez, ou touche <kbd>Espace</kbd></p>
+    </div>
+
+    <div class="verdict" id="verdict" hidden>
+      <button class="again" id="btn-again">À revoir <kbd>←</kbd></button>
+      <button class="good" id="btn-good">Je le savais <kbd>→</kbd></button>
+    </div>
+
+    <div class="counters">
+      <span><b id="c-left">0</b> dans la pile</span>
+      <span><b id="c-aside">0</b> de côté</span>
+      <span><b id="c-done">0</b> acquis</span>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ bilan -->
+  <section id="done" class="screen" hidden>
+    <header class="masthead">
+      <p class="eyebrow">Séance terminée</p>
+      <h1 id="done-title"></h1>
+    </header>
+    <div class="stats" id="stats"></div>
+    <div class="panel" id="missed-panel" hidden>
+      <h2 class="panel-title">Ce qui a résisté</h2>
+      <ul class="missed" id="missed"></ul>
+    </div>
+    <div class="launch">
+      <button class="primary big" id="redo">Reprendre la même sélection</button>
+      <button class="link-btn" id="back">Changer de sélection</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
