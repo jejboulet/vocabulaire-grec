@@ -3,7 +3,7 @@
 Cartes de vocabulaire pour les étudiants d'*Introduction au grec biblique*,
 de Jacques E. J. Boulet.
 
-**➜ [Ouvrir l'application](https://jejboulet.github.io/vocabulaire-grec/)**
+**➜ [Ouvrir l'application](https://vocabgrec.boulet.pub/)**
 
 Aucun compte, aucune inscription, rien à installer : tout se passe dans le
 navigateur, et rien n'est envoyé nulle part.
