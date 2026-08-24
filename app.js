@@ -106,7 +106,12 @@ function renderSetup() {
   $('#stamp').textContent = 'Vocabulaire mis à jour le '
     + d.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }) + '.';
 
-  // chapitres
+  // Chapitres : une grille de numéros, sans titre. Le titre est de peu
+  // d'usage ici -- on choisit la semaine qu'on a devant soi, qu'on connaît
+  // déjà -- et c'est lui qui imposait à la liste une largeur que le
+  // téléphone ne pouvait pas tenir. Il reste dans l'infobulle, dans
+  // l'étiquette lue par un lecteur d'écran, et sous la grille dès que la
+  // sélection est assez courte pour qu'on puisse l'écrire.
   const box = $('#chapters');
   box.innerHTML = '';
   DATA.chapters.forEach(c => {
@@ -115,28 +120,78 @@ function renderSetup() {
     b.type = 'button';
     b.dataset.n = c.n;
     b.setAttribute('aria-pressed', prefs.chapters.includes(c.n));
-    b.innerHTML = `<span class="ch-n">${c.n}</span>`
-                + `<span class="ch-t">${c.title}</span>`
-                + `<span class="ch-c">${c.count}</span>`;
+    b.setAttribute('aria-label',
+      `Chapitre ${c.n}, ${c.title}, ${plural(c.count, 'mot', 'mots')}`);
+    b.title = `${c.n}. ${c.title} (${plural(c.count, 'mot', 'mots')})`;
+    b.textContent = c.n;
     box.appendChild(b);
   });
 
-  let anchor = null;                       // pour la sélection Maj+clic
-  box.addEventListener('click', e => {
+  const cells = () => $$('.ch', box);
+  const setRange = (a, b, on) => {
+    const [lo, hi] = a < b ? [a, b] : [b, a];
+    cells().forEach(o => {
+      const k = +o.dataset.n;
+      if (k >= lo && k <= hi) o.setAttribute('aria-pressed', on);
+    });
+  };
+
+  // Glisser sélectionne une plage -- au doigt comme à la souris, puisque
+  // Maj+clic n'existe pas sur un écran tactile et qu'une semaine, c'est
+  // presque toujours deux ou trois chapitres de suite.
+  let anchor = null;   // dernière case posée, pour le Maj+clic à la souris
+  let drag = null;     // { from, on, before } pendant un glissement
+
+  box.addEventListener('pointerdown', e => {
     const b = e.target.closest('.ch');
     if (!b) return;
     const n = +b.dataset.n;
+
     if (e.shiftKey && anchor !== null && anchor !== n) {
-      const [lo, hi] = anchor < n ? [anchor, n] : [n, anchor];
-      const on = b.getAttribute('aria-pressed') !== 'true';
-      $$('.ch', box).forEach(o => {
-        const k = +o.dataset.n;
-        if (k >= lo && k <= hi) o.setAttribute('aria-pressed', on);
-      });
-    } else {
-      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');
-      anchor = n;
+      setRange(anchor, n, b.getAttribute('aria-pressed') !== 'true');
+      syncSelection();
+      return;
     }
+    // L'état d'AVANT est mémorisé pour être rejoué à chaque déplacement :
+    // sans cela, revenir en arrière au cours d'un glissement laisserait
+    // sélectionnées les cases survolées en chemin puis abandonnées.
+    drag = {
+      from: n,
+      on: b.getAttribute('aria-pressed') !== 'true',
+      before: new Map(cells().map(o => [+o.dataset.n,
+                                        o.getAttribute('aria-pressed')])),
+      last: n,
+    };
+    b.setAttribute('aria-pressed', drag.on);
+    box.setPointerCapture(e.pointerId);
+    syncSelection();
+  });
+
+  box.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const b = el && el.closest ? el.closest('.ch') : null;
+    if (!b || !box.contains(b)) return;
+    const n = +b.dataset.n;
+    if (n === drag.last) return;
+    drag.last = n;
+    cells().forEach(o => o.setAttribute('aria-pressed',
+                                        drag.before.get(+o.dataset.n)));
+    setRange(drag.from, n, drag.on);
+    syncSelection();
+  });
+
+  const endDrag = () => { if (drag) { anchor = drag.from; drag = null; } };
+  box.addEventListener('pointerup', endDrag);
+  box.addEventListener('pointercancel', endDrag);
+
+  // Le clavier produit un clic sans pointeur (detail 0) : c'est le seul
+  // cas que pointerdown n'a pas déjà traité.
+  box.addEventListener('click', e => {
+    const b = e.target.closest('.ch');
+    if (!b || e.detail !== 0) return;
+    b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');
+    anchor = +b.dataset.n;
     syncSelection();
   });
 
@@ -200,6 +255,17 @@ function syncSelection() {
   const n = words.length;
   const btn = $('#start');
   btn.disabled = n === 0;
+
+  // Les titres que la grille ne montre plus reviennent ici tant qu'ils
+  // tiennent en une ligne ou deux -- c'est-à-dire dans le cas ordinaire,
+  // les deux ou trois chapitres d'une semaine.
+  const names = $('#ch-names');
+  const sel = prefs.chapters;
+  names.textContent = (sel.length && sel.length <= 3)
+    ? sel.map(k => (DATA.chapters.find(c => c.n === k) || {}).title)
+         .filter(Boolean).join(' · ')
+    : '';
+
   if (!n) {
     $('#tally').textContent = 'Aucun chapitre choisi';
     btn.textContent = 'Commencer';
@@ -207,9 +273,8 @@ function syncSelection() {
   }
   const size  = prefs.pile[prefs.mode];
   const piles = chunk(words, size).length;
-  const nch   = prefs.chapters.length;
   $('#tally').textContent =
-    `${plural(n, 'mot', 'mots')} · ${plural(nch, 'chapitre', 'chapitres')} · `
+    `${selectionName()} · ${plural(n, 'mot', 'mots')} · `
     + (piles > 1 ? plural(piles, 'pile', 'piles') : 'une seule pile');
   btn.textContent = prefs.mode === 'learn' ? 'Apprendre' : 'Réviser';
 }
