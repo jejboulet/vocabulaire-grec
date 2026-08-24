@@ -136,32 +136,41 @@ function renderSetup() {
     });
   };
 
-  // Glisser sélectionne une plage -- au doigt comme à la souris, puisque
-  // Maj+clic n'existe pas sur un écran tactile et qu'une semaine, c'est
-  // presque toujours deux ou trois chapitres de suite.
-  let anchor = null;   // dernière case posée, pour le Maj+clic à la souris
-  let drag = null;     // { from, on, before } pendant un glissement
+  // Deux façons de prendre une plage : Maj+clic, l'habitude du bureau, et
+  // le glissement, seul geste dont dispose un écran tactile.
+  //
+  // L'un comme l'autre REJOUENT l'état mémorisé avant de tracer la plage.
+  // C'est ce qui permet de revenir sur ses pas : un Maj+clic qui raccourcit
+  // 6-9 en 6-8 doit laisser 6, 7, 8 -- pas basculer 6-8 et laisser le 9
+  // tout seul. Sans état mémorisé, chaque Maj+clic ne peut que basculer ce
+  // qu'il touche, et une plage ne se corrige plus, elle s'inverse.
+  const snapshot = () => new Map(cells().map(o => [+o.dataset.n,
+                                                   o.getAttribute('aria-pressed')]));
+  const restore  = m => cells().forEach(o => o.setAttribute('aria-pressed',
+                                                            m.get(+o.dataset.n)));
+
+  let anchor   = null;   // dernière case posée à la main
+  let baseline = null;   // sélection telle qu'elle était quand l'ancre a été posée
+  let drag     = null;   // { from, on, before, last } pendant un glissement
 
   box.addEventListener('pointerdown', e => {
     const b = e.target.closest('.ch');
     if (!b) return;
     const n = +b.dataset.n;
 
-    if (e.shiftKey && anchor !== null && anchor !== n) {
-      setRange(anchor, n, b.getAttribute('aria-pressed') !== 'true');
+    // Pas de `anchor !== n` ici : Maj+clic sur l'ancre elle-même réduit la
+    // plage à cette seule case, ce qui est le geste pour se raviser. En
+    // l'excluant, il retombait sur la bascule ordinaire et laissait un trou.
+    if (e.shiftKey && anchor !== null) {
+      restore(baseline);
+      setRange(anchor, n, true);
       syncSelection();
       return;
     }
-    // L'état d'AVANT est mémorisé pour être rejoué à chaque déplacement :
-    // sans cela, revenir en arrière au cours d'un glissement laisserait
-    // sélectionnées les cases survolées en chemin puis abandonnées.
-    drag = {
-      from: n,
-      on: b.getAttribute('aria-pressed') !== 'true',
-      before: new Map(cells().map(o => [+o.dataset.n,
-                                        o.getAttribute('aria-pressed')])),
-      last: n,
-    };
+    drag = { from: n,
+             on: b.getAttribute('aria-pressed') !== 'true',
+             before: snapshot(),
+             last: n };
     b.setAttribute('aria-pressed', drag.on);
     box.setPointerCapture(e.pointerId);
     syncSelection();
@@ -175,13 +184,22 @@ function renderSetup() {
     const n = +b.dataset.n;
     if (n === drag.last) return;
     drag.last = n;
-    cells().forEach(o => o.setAttribute('aria-pressed',
-                                        drag.before.get(+o.dataset.n)));
+    restore(drag.before);
     setRange(drag.from, n, drag.on);
     syncSelection();
   });
 
-  const endDrag = () => { if (drag) { anchor = drag.from; drag = null; } };
+  // Après un glissement l'ancre est sa case de départ, et l'état de
+  // référence celui d'avant le glissement, cette case mise à jour : un
+  // Maj+clic qui suit se comporte alors exactement comme après un clic
+  // simple, au lieu de repartir de la plage que le glissement a tracée.
+  const endDrag = () => {
+    if (!drag) return;
+    anchor = drag.from;
+    baseline = new Map(drag.before);
+    baseline.set(drag.from, String(drag.on));
+    drag = null;
+  };
   box.addEventListener('pointerup', endDrag);
   box.addEventListener('pointercancel', endDrag);
 
@@ -192,11 +210,20 @@ function renderSetup() {
     if (!b || e.detail !== 0) return;
     b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');
     anchor = +b.dataset.n;
+    baseline = snapshot();   // sans quoi un Maj+clic rejouerait un état périmé
     syncSelection();
   });
 
-  $('#sel-all').onclick  = () => { $$('.ch', box).forEach(b => b.setAttribute('aria-pressed', 'true'));  syncSelection(); };
-  $('#sel-none').onclick = () => { $$('.ch', box).forEach(b => b.setAttribute('aria-pressed', 'false')); syncSelection(); };
+  // Tout/Rien repartent de zéro : l'ancre et son état de référence
+  // dateraient d'une sélection que ce clic vient d'effacer.
+  const setAll = on => {
+    cells().forEach(b => b.setAttribute('aria-pressed', on));
+    anchor = null;
+    baseline = null;
+    syncSelection();
+  };
+  $('#sel-all').onclick  = () => setAll(true);
+  $('#sel-none').onclick = () => setAll(false);
 
   // mode + sens : deux groupes de boutons radio
   $$('.mode').forEach(b => b.onclick = () => {

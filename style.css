@@ -120,6 +120,14 @@ body {
 .panel-head .panel-title { margin-bottom: .5rem; }
 .panel-actions { display: flex; gap: .9rem; }
 .hint { margin: -.3rem 0 .9rem; font-size: .82rem; color: var(--ink-3); }
+/* Le conseil dépend du pointeur, pas de la largeur : Maj+clic ne veut rien
+   dire au doigt, et un écran étroit peut avoir une souris. Le doigt est le
+   cas par défaut, la souris l'exception qu'on interroge. */
+.hint-fine { display: none; }
+@media (pointer: fine) {
+  .hint-fine   { display: inline; }
+  .hint-coarse { display: none; }
+}
 /* les raccourcis clavier ne veulent rien dire au doigt -- mais le
    glissement, lui, s'adresse d'abord à lui : l'indice reste */
 @media (pointer: coarse) { .verdict kbd { display: none; } }
