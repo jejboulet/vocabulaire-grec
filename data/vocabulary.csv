@@ -72,7 +72,7 @@ Lexème,Chapitre,Glose française,Note
 σε,6,te (l'accusatif de σύ),
 σῴζω,6,sauver,
 ἀγοράζω,7,acheter,
-ἀκούω,7,"compl. à l'acc. entendre, écouter; compl. au gén. écouter, obéir",
+ἀκούω,7,"+ acc. entendre, écouter; + gén. écouter, obéir",
 "βιβλίον, -ου, τό",7,"rouleau, livre, document",
 δοξάζω,7,glorifier,
 εὑρίσκω,7,"trouver, découvrir (2e aoriste εὗρον)",
@@ -150,7 +150,7 @@ Lexème,Chapitre,Glose française,Note
 μέλλω,15,"être sur le point de, avoir l'intention de",
 "μόνος, -η, -ον",15,"seul, unique; neut. comme adv. seulement",
 "οἶκος, -ου, ὁ",15,"maison, maisonnée",
-προσκυνέω,15,"compl. au dat. se prosterner, adorer",
+προσκυνέω,15,"+ dat. se prosterner, adorer",
 διά,16,"gén. à travers, par, au moyen de; acc. à cause de, grâce à",
 διακονέω,16,servir,
 εὐλογέω,16,bénir,
@@ -200,7 +200,7 @@ Lexème,Chapitre,Glose française,Note
 "μηδείς, μηδεμία, μηδέν",21,"aucun, personne, rien",
 "οὐδείς, οὐδεμία, οὐδέν",21,"aucun, personne, rien",
 "τέλος, -ους, τό",21,"but, fin",
-φοβέω,21,"pass. avoir peur, être effrayé; pass. avec compl. à l'acc. craindre","Ce mot se trouve seulement au passif dans le Nouveau Testament. L'actif du verbe, qu'on trouve ailleurs, veut dire « effrayer, mettre en fuite »."
+φοβέω,21,"pass. avoir peur, être effrayé; pass. + acc. craindre","Ce mot se trouve seulement au passif dans le Nouveau Testament. L'actif du verbe, qu'on trouve ailleurs, veut dire « effrayer, mettre en fuite »."
 "ἁμαρτία, -ας, ἡ",22,péché,
 "ἀνήρ, ἀνδρός, ὁ",22,"homme, mari",
 "ἐλπίς, ἐλπίδος, ἡ",22,"espoir, espérance",
@@ -301,7 +301,7 @@ Lexème,Chapitre,Glose française,Note
 "θρόνος, -ου, ὁ",34,"siège, trône",
 "πρεσβύτερος, -α, -ον",34,"adj. (plus) ancien; subst. ancien, vieil homme","Πρεσβύτερος est la forme comparative de πρέσβυς. Pour le comparatif, voir le chapitre 52."
 "σοφία, -ας, ἡ",34,sagesse,
-ἅπτω,35,allumer; moy. avec compl. au gén. toucher,
+ἅπτω,35,allumer; moy. + gén. toucher,
 "γενεά, -ᾶς, ἡ",35,"génération, époque",
 ἐγγύς,35,"adv. proche, près; prép. + gén. près de",
 "Ἰουδαία, -ας, ἡ",35,Judée,
