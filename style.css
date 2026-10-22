@@ -296,11 +296,11 @@ body {
    une préposition se lit en descendant ses cas. */
 .senses {
   display: grid; grid-template-columns: auto 1fr; gap: .25rem .55rem;
-  justify-content: center; text-align: left;
+  justify-content: center; align-items: baseline; text-align: left;
 }
 .sense { display: contents; }
 .lab {
-  font-family: var(--sans); font-size: .68em; letter-spacing: .05em;
+  font-family: var(--sans); font-size: .8em; letter-spacing: .05em;
   color: var(--amber); font-weight: 600; white-space: nowrap;
 }
 .sense .lab { text-align: right; }
