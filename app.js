@@ -355,6 +355,7 @@ function start() {
     misses: new Map(),
     words: new Map(words.map(w => [w.id, w])),
     flipped: false,
+    last: null,                // la séance avant la dernière réponse, pour l'annuler
   };
   show('study');
   nextStage();
@@ -420,6 +421,7 @@ function showCard() {
   $('#c-left').textContent  = S.queue.length;
   $('#c-aside').textContent = S.aside.length;
   $('#c-done').textContent  = S.mastered;
+  $('#undo').hidden = !S.last;
   $('#bar-fill').style.width = (100 * S.mastered / st.cards.length) + '%';
 }
 
@@ -433,6 +435,7 @@ function flip() {
 
 function answer(ok) {
   if (!S.flipped) return;
+  S.last = snapshot();
   const w = S.queue.shift();
   S.answers++;
   if (ok) { S.correct++; S.mastered++; }
@@ -450,6 +453,29 @@ function answer(ok) {
     return showCard();
   }
   nextStage();
+}
+
+/* ──────────────────────────────────────────────────────────── annuler */
+/* On appuie vite, on se trompe de bouton, et la pile est déjà passée à la
+   carte suivante. Chaque réponse garde la séance telle qu'elle était juste
+   avant : la DERNIÈRE se reprend, une seule, pour ne pas compliquer la
+   séance. La carte revient retournée, la réponse visible, le verdict en
+   attente. */
+function snapshot() {
+  return {
+    si: S.si, queue: S.queue.slice(), aside: S.aside.slice(), round: S.round,
+    mastered: S.mastered, answers: S.answers, correct: S.correct,
+    misses: new Map(S.misses),
+  };
+}
+
+function undo() {
+  if (!S || !S.last) return;
+  Object.assign(S, S.last, { last: null });
+  show('study');
+  drawStage();
+  showCard();
+  flip();
 }
 
 /* ───────────────────────────────────────────────────────────── bilan */
@@ -494,10 +520,17 @@ function show(which) {
 $('#card').addEventListener('click', flip);
 $('#btn-good').addEventListener('click',  () => answer(true));
 $('#btn-again').addEventListener('click', () => answer(false));
+$('#undo').addEventListener('click', undo);
+$('#done-undo').addEventListener('click', undo);
 
 document.addEventListener('keydown', e => {
-  if ($('#study').hidden) return;
+  const isUndo = e.key === 'z' || e.key === 'Z' || e.key === 'Backspace';
+  if ($('#study').hidden) {
+    if (!$('#done').hidden && isUndo && S && S.last) { e.preventDefault(); undo(); }
+    return;
+  }
   if (e.key === 'Escape') { show('setup'); return; }
+  if (isUndo && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); undo(); return; }
   if (!S.flipped) {
     if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); flip(); }
     return;

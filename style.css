@@ -328,6 +328,11 @@ kbd {
   font-size: .84rem; color: var(--ink-3);
 }
 .counters b { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* l'annulation reste discrète : on n'en a besoin qu'après un faux pas */
+.undo-row { margin: .9rem 0 0; text-align: center; min-height: 1.4em; }
+.undo-row .link-btn { color: var(--ink-3); }
+.undo-row .link-btn:hover { color: var(--teal); }
+@media (pointer: coarse) { .undo-row kbd { display: none; } }
 
 /* ───────────────────────────────────────────────────────── bilan */
 #done { max-width: 40rem; margin: 0 auto; }

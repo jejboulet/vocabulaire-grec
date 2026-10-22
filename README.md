@@ -26,6 +26,10 @@ Dans les deux cas, une pile se travaille de la même façon : ce qu'on sait en
 sort, ce qu'on rate est mis de côté, et la pile de côté est ensuite reprise,
 tour après tour, jusqu'à ce qu'il n'en reste rien.
 
+Une réponse donnée par erreur se reprend : « Annuler la dernière réponse »
+(ou la touche Z) ramène la carte précédente, retournée, pour la juger à
+nouveau.
+
 Le sens se choisit avant de commencer : du grec au français, ou l'inverse.
 
 ## Emporter le vocabulaire ailleurs
