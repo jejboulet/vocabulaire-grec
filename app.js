@@ -408,6 +408,8 @@ function showCard() {
     ? `<div class="answer fr">${sensesHTML(w)}</div>`
     : `<div class="answer">${esc(w.lex)}</div>`;
   if (w.tr)   back += `<div class="translit">${esc(w.tr)}</div>`;
+  if (w.aor && w.aor.length) back += '<div class="aor">' + w.aor.map(([lab, f]) =>
+    `<span class="lab">${esc(lab)}</span><span class="form grk">${esc(f)}</span>`).join('') + '</div>';
   if (w.note) back += `<div class="note">${grk(w.note)}</div>`;
   back += `<div class="chip">Chapitre ${w.ch}</div>`;
   $('#reveal').innerHTML = back;

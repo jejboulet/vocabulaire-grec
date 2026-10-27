@@ -283,6 +283,13 @@ body {
 .reveal .answer { font-family: var(--serif); font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1.3; }
 .reveal .answer.fr { font-family: var(--sans); font-size: clamp(1.25rem, 4vw, 1.6rem); }
 .reveal .translit { margin-top: .35rem; font-style: italic; color: var(--ink-3); font-size: .95rem; }
+.reveal .aor {
+  display: grid; width: fit-content; max-width: 100%; grid-template-columns: auto auto; gap: .15rem .7rem; align-items: baseline;
+  margin: 1rem auto 0; padding: .45rem .9rem; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--paper-2); font-size: .82rem; color: var(--ink-3);
+}
+.reveal .aor .lab { justify-self: end; text-align: right; }
+.reveal .aor .form { font-size: 1.3rem; color: var(--ink); text-align: left; }
 .reveal .note {
   margin: 1.2rem auto 0; max-width: 30rem; font-size: .88rem; color: var(--ink-2);
   background: var(--amber-soft); border-radius: 10px; padding: .7rem .9rem; text-align: left;
@@ -292,18 +299,21 @@ body {
   text-transform: uppercase; color: var(--ink-3);
 }
 
-/* Les étiquettes tiennent leur propre colonne, comme dans la liste imprimée :
-   une préposition se lit en descendant ses cas. */
+/* Le bloc des sens est centré sur la carte ; dedans, les étiquettes sont
+   alignées à droite et les gloses à gauche, comme dans la liste imprimée. */
 .senses {
-  display: grid; grid-template-columns: auto 1fr; gap: .25rem .55rem;
-  justify-content: center; align-items: baseline; text-align: left;
+  display: grid; grid-template-columns: auto auto; gap: .25rem .55rem;
+  justify-content: center; align-items: baseline;
 }
 .sense { display: contents; }
+.sense .lab { justify-self: end; text-align: right; }
+.sense > span:last-child { text-align: left; }
+.lab { justify-self: end; text-align: right; }
+.sense > span:last-child { text-align: left; }
 .lab {
   font-family: var(--sans); font-size: .8em; letter-spacing: .05em;
   color: var(--amber); font-weight: 600; white-space: nowrap;
 }
-.sense .lab { text-align: right; }
 .isenses .sep { color: var(--ink-3); }
 .flip-hint { margin: 1.6rem 0 0; font-size: .8rem; color: var(--ink-3); }
 kbd {
