@@ -345,10 +345,25 @@ function buildStages(words, mode, size) {
 function start() {
   const words = pool();
   if (!words.length) return;
+  begin(words, buildStages(words, prefs.mode, prefs.pile[prefs.mode]), selectionName());
+}
+
+/* Après une séance, les mots manqués, en une seule pile mélangée. Ceux
+   qu'on y manque encore se reprennent à leur tour, jusqu'à une séance
+   sans faute. */
+function startMissed() {
+  const words = [...S.misses.keys()].map(id => S.words.get(id));
+  if (!words.length) return;
+  begin(words, [{ name: 'Mots manqués', cards: shuffle(words) }],
+        S.baseTitle + ' · mots manqués', S.baseTitle);
+}
+
+function begin(words, stages, title, baseTitle = title) {
   S = {
     mode: prefs.mode,
     dir:  prefs.dir,
-    stages: buildStages(words, prefs.mode, prefs.pile[prefs.mode]),
+    title, baseTitle,
+    stages,
     si: -1,
     queue: [], aside: [], round: 1, mastered: 0,
     answers: 0, correct: 0,
@@ -494,7 +509,7 @@ function selectionName() {
 function finish() {
   const unique = S.words.size;
   const pct = S.answers ? Math.round(100 * S.correct / S.answers) : 0;
-  $('#done-title').textContent = selectionName();
+  $('#done-title').textContent = S.title;
   $('#stats').innerHTML = [
     [unique, unique > 1 ? 'mots' : 'mot'],
     [S.answers, S.answers > 1 ? 'réponses' : 'réponse'],
@@ -509,6 +524,13 @@ function finish() {
          + `<span class="n">${n}×</span></li>`;
   }).join('');
 
+  // Des mots manqués : les revoir est la suite naturelle, et prend Entrée.
+  // Sans faute, Entrée reprend la même sélection.
+  const n = missed.length;
+  $('#again-missed').hidden = !n;
+  $('#again-missed-n').textContent = n === 1 ? 'le mot manqué' : `les ${n} mots manqués`;
+  $('#redo').className = n ? 'secondary big' : 'primary big';
+  $('#redo kbd').textContent = n ? 'R' : 'Entrée';
   show('done');
 }
 
@@ -524,11 +546,24 @@ $('#btn-good').addEventListener('click',  () => answer(true));
 $('#btn-again').addEventListener('click', () => answer(false));
 $('#undo').addEventListener('click', undo);
 $('#done-undo').addEventListener('click', undo);
+$('#again-missed').addEventListener('click', startMissed);
+
+// Bilan : chaque choix a sa touche, affichée sur son bouton quand il y a un clavier.
+function doneKeys(e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  const act = k === 'escape' ? () => show('setup')
+    : k === 'enter' ? (S.misses.size ? startMissed : start)
+    : k === 'r' ? start
+    : (k === 'z' || k === 'backspace') && S.last ? undo
+    : null;
+  if (act) { e.preventDefault(); act(); }
+}
 
 document.addEventListener('keydown', e => {
   const isUndo = e.key === 'z' || e.key === 'Z' || e.key === 'Backspace';
   if ($('#study').hidden) {
-    if (!$('#done').hidden && isUndo && S && S.last) { e.preventDefault(); undo(); }
+    if (!$('#done').hidden) doneKeys(e);
     return;
   }
   if (e.key === 'Escape') { show('setup'); return; }

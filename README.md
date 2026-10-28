@@ -30,6 +30,10 @@ Une réponse donnée par erreur se reprend : « Annuler la dernière réponse »
 (ou la touche Z) ramène la carte précédente, retournée, pour la juger à
 nouveau.
 
+En fin de séance, on peut revoir seulement les mots manqués (touche
+Entrée), reprendre la même sélection (R) ou revenir au choix des chapitres
+(Échap).
+
 Le sens se choisit avant de commencer : du grec au français, ou l'inverse.
 
 ## Emporter le vocabulaire ailleurs
