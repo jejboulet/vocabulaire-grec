@@ -216,7 +216,7 @@ Lexème,Chapitre,Glose française,Note
 ἀσπάζομαι,23,saluer,
 βούλομαι,23,"souhaiter, vouloir, planifier, avoir l’intention de",
 δέχομαι,23,"recevoir, accueillir",
-δύναμαι,23,"pouvoir, être capable",
+δύναμαι,23,"pouvoir, être capable",L'aoriste de δύναμαι (moyen au présent et au futur) a la forme du passif (ἠδυνήθην).
 ἐκπορεύομαι,23,"sortir, aller",
 ἐργάζομαι,23,"travailler, produire, faire",
 πορεύομαι,23,aller,
@@ -235,7 +235,7 @@ Lexème,Chapitre,Glose française,Note
 ἀποθνῄσκω,25,mourir (2e aoriste ἀπέθανον),
 βάλλω,25,"jeter, lancer (2e aoriste ἔβαλον)",
 γίνομαι,25,"devenir, être, arriver, se produire (2e aoriste ἐγενόμην)","Le verbe γίνομαι dans le sens « devenir » est comme ἐστίν, car il lie un sujet au nominatif à un attribut du sujet au nominatif."
-γινώσκω,25,"savoir, connaître (2e aoriste ἔγνων)",
+γινώσκω,25,"savoir, connaître (2e aoriste ἔγνων)","Le verbe γινώσκω est un cas particulier, car son aoriste n'a pas de voyelle de liaison. Les terminaisons s'ajoutent directement au radical γνω. Aussi, la 3e personne du pluriel se termine en -σαν (ἔγνωσαν). Voici quelques formes des autres modes: γνῶναι (infinitif), γνῷ (subjonctif, 3e sg.), γνούς, γνόντος (participe)."
 ἔρχομαι,25,"venir, aller (2e aoriste ἦλθον)",
 ἔχω,25,"avoir, posséder (2e aoriste ἔσχον)",
 λαμβάνω,25,"prendre, recevoir (2e aoriste ἔλαβον)",
